@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useMutation } from "react-query";
 
@@ -9,9 +10,15 @@ type CreateUserRequest = {
 };
 
 export const useCreateMyUSer = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const createMyUserRequest = async (user: CreateUserRequest) => {
+    const accessToken = await getAccessTokenSilently();
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/my/user`, user);
+      const response = await axios.post(`${API_BASE_URL}/api/my/user`, user, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       return response.data;
     } catch (error) {
